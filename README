@@ -1,0 +1,5 @@
+Scripts for looking at 'coverage' of various Whole Genome Alignment
+methods across any given set of 'ranges' i.e. genes, exons,
+orthologues, etc. I'm using Set::IntRange to calculate coverage, so in
+fact, all scripts here are quite generic.
+
