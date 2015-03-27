@@ -1,4 +1,11 @@
 
+-- Here we query the gene ranges for pairs of genes annotated with
+-- the 'homoeolog_one2one' relationship (or whatever) by the compara
+-- gene tree pipeline.
+
+-- We do it in a couple of steps for efficiency (3 then 2 joins
+-- instead of 6 joins in one (included for reference below)).
+
 CREATE TEMPORARY TABLE temp_x1 (
   PRIMARY KEY (homology_id, gene_member_id)
 ) AS
@@ -26,10 +33,11 @@ AND
   dnafrag.genome_db_id = 2054
 ;
 
+OPTIMIZE TABLE temp_x1;
+
 CREATE TEMPORARY TABLE temp_x2 LIKE          temp_x1;
 INSERT INTO            temp_x2 SELECT * FROM temp_x1;
 
-OPTIMIZE TABLE temp_x1;
 OPTIMIZE TABLE temp_x2;
 
 SELECT
@@ -47,6 +55,8 @@ WHERE
   a.gene_member_id !=
   b.gene_member_id
 ;
+
+
 
 
 
