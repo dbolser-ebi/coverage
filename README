@@ -23,10 +23,26 @@ See inside that SQL to configure which WGA is selected. Note that we
 select 'bi-directional' data here, with every pair being represented
 twice as "A -> B" and "B -> A".
 
+Examples:
+
+    ## Set MLSS = 9286
+    mysql-eg-mirror ensembl_compara_plants_24_77 -N     \
+      < query_alignment_ranges.sql     > wheat_lastz-24.range
+
+    ## Set MLSS = 9358
+    mysql-eg-mirror ensembl_compara_plants_25_78 -N     \
+      < query_alignment_ranges.sql     > wheat_lastz-25.range
+
+    ## Set MLSS = 9413
+    mysql-eg-mirror ensembl_compara_plants_26_79 -N     \
+      < query_alignment_ranges.sql     > wheat_atac-26.range
+
 
 
 2) Query a range to compare to (in the above format) from our Ensembl
    Core database (using our internal MySQL shortcut command):
+
+Examles:
 
     time \
       ./query_ranges.sh triticum_aestivum_core_24_77_1 mysql-eg-mirror 
