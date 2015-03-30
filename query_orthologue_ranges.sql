@@ -6,6 +6,11 @@
 -- We do it in a couple of steps for efficiency (3 then 2 joins
 -- instead of 6 joins in one (included for reference below)).
 
+OPTIMIZE TABLE homology;
+OPTIMIZE TABLE homology_member;
+OPTIMIZE TABLE gene_member;
+OPTIMIZE TABLE dnafrag;
+
 CREATE TEMPORARY TABLE temp_x1 (
   PRIMARY KEY (homology_id, gene_member_id)
 ) AS
@@ -28,8 +33,10 @@ USING
 INNER JOIN
   dnafrag USING (dnafrag_id)
 WHERE
+  -- Paralogues between component genomes
   homology.description = 'homoeolog_one2one'
 AND
+  -- Bread wheat genome DBid
   dnafrag.genome_db_id = 2054
 ;
 
@@ -48,7 +55,9 @@ SELECT
   b.dnafrag_start as bs,
   b.dnafrag_end as be
 FROM
-  temp_y a INNER JOIN temp_y b
+  temp_x1 a
+INNER JOIN
+  temp_x2 b
 USING
   (homology_id)
 WHERE

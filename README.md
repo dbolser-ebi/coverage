@@ -45,13 +45,7 @@ Examples:
 Examles:
 
     time \
-      ./query_ranges.sh triticum_aestivum_core_24_77_1 mysql-eg-mirror 
-
-    time \
-      ./query_ranges.sh triticum_aestivum_core_25_78_2 mysql-eg-mirror 
-
-    time \
-      ./query_ranges.sh triticum_aestivum_core_26_79_2 mysql-eg-mirror 
+      ./query_basic_ranges.sh triticum_aestivum_core_24_77_1 mysql-eg-mirror
 
 
 
@@ -61,3 +55,23 @@ Examles:
       ./simple_coverage.plx -s target \
         wheat_lastz-24.range \
         Ranges/triticum_aestivum_core_24_77_1_total.range 
+
+
+
+4) Repeat...
+
+   Query the 1 to 1 orthologues between wheat A, B, and D component
+   genomes (see inside the script to set the homology type:
+
+    time \
+      mysql-staging-2-ensrw ensembl_compara_plants_26_79 \
+        < query_orthologue_ranges.sql \
+        > orthologue.ranges
+
+   Compare some ranges:
+
+    time \
+      ./simple_coverage.plx \
+        wheat_atac-26-3B_vs_3A.range \
+        Ranges/orthologue.ranges.2
+
