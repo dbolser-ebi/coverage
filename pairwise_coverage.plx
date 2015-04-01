@@ -30,7 +30,7 @@ warn scalar @y, "\n";
 
 
 
-my $support;
+my $support = 0;
 
 while(<$RANGEPAIR_2>){
     chomp;
