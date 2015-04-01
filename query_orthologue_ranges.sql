@@ -6,10 +6,12 @@
 -- We do it in a couple of steps for efficiency (3 then 2 joins
 -- instead of 6 joins in one (included for reference below)).
 
+/* 
 OPTIMIZE TABLE homology;
 OPTIMIZE TABLE homology_member;
 OPTIMIZE TABLE gene_member;
 OPTIMIZE TABLE dnafrag;
+*/
 
 CREATE TEMPORARY TABLE temp_x1 (
   PRIMARY KEY (homology_id, gene_member_id)
@@ -36,16 +38,20 @@ WHERE
   -- Paralogues between component genomes
   homology.description = 'homoeolog_one2one'
 AND
-  -- Bread wheat genome DBid
-  dnafrag.genome_db_id = 2054
+  -- Bread wheat genome DBid (EG24)
+  dnafrag.genome_db_id = 2000
+#  -- Bread wheat genome DBid (EG25+)
+#  dnafrag.genome_db_id = 2054
 ;
 
-OPTIMIZE TABLE temp_x1;
+-- Creates spurious output
+#OPTIMIZE TABLE temp_x1;
 
 CREATE TEMPORARY TABLE temp_x2 LIKE          temp_x1;
 INSERT INTO            temp_x2 SELECT * FROM temp_x1;
 
-OPTIMIZE TABLE temp_x2;
+-- Creates spurious output
+#OPTIMIZE TABLE temp_x2;
 
 SELECT
   a.name,
