@@ -6,7 +6,8 @@
 -- We do it in a couple of steps for efficiency (3 then 2 joins
 -- instead of 6 joins in one (included for reference below)).
 
-/* 
+/*
+-- Creates spurious output that needs to be removed from the result
 OPTIMIZE TABLE homology;
 OPTIMIZE TABLE homology_member;
 OPTIMIZE TABLE gene_member;
@@ -20,6 +21,7 @@ SELECT
   homology_id,
   gene_member_id,
   name,
+  stable_id,
   dnafrag_start,
   dnafrag_end
 FROM
@@ -39,27 +41,30 @@ WHERE
   homology.description = 'homoeolog_one2one'
 AND
   -- Bread wheat genome DBid (EG24)
-  dnafrag.genome_db_id = 2000
+  dnafrag.genome_db_id BETWEEN 2001 AND 2003
 #  -- Bread wheat genome DBid (EG25+)
 #  dnafrag.genome_db_id = 2054
 ;
 
--- Creates spurious output
-#OPTIMIZE TABLE temp_x1;
+-- Creates spurious output that needs to be removed from the result
+OPTIMIZE TABLE temp_x1;
 
 CREATE TEMPORARY TABLE temp_x2 LIKE          temp_x1;
 INSERT INTO            temp_x2 SELECT * FROM temp_x1;
 
--- Creates spurious output
-#OPTIMIZE TABLE temp_x2;
+-- Creates spurious output that needs to be removed from the result
+OPTIMIZE TABLE temp_x2;
 
 SELECT
-  a.name,
-  a.dnafrag_start,
-  a.dnafrag_end,
-  b.name AS bn,
-  b.dnafrag_start as bs,
-  b.dnafrag_end as be
+  a.name          AS aan,
+#  a.stable_id     AS aai,
+  a.dnafrag_start AS aas,
+  a.dnafrag_end   AS aae,
+  --
+  b.name          AS bbn,
+#  a.stable_id     AS bbi,
+  b.dnafrag_start AS bbs,
+  b.dnafrag_end   AS bbe
 FROM
   temp_x1 a
 INNER JOIN
