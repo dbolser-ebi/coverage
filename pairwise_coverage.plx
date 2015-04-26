@@ -30,10 +30,12 @@ warn scalar @y, "\n";
 
 
 
+my $i = 0;
 my $support = 0;
 
 while(<$RANGEPAIR_2>){
     chomp;
+    $i++;
     
     my ($id1, $st1, $en1, 
         $id2, $st2, $en2) = split "\t";
@@ -42,6 +44,7 @@ while(<$RANGEPAIR_2>){
         _has_support($id1, $st1, $en1, $id2, $st2, $en2);
 }
 
+warn $i, "\n";
 warn $support, "\n";
 
 
