@@ -1,4 +1,4 @@
-#!perl
+#!/bin/env perl
 
 use strict;
 use warnings;
@@ -63,20 +63,30 @@ warn "using $side\n";
 
 
 
+## This 'first pass' is needed for efficieny below. Basically the 'set
+## resize' operations are relatively costly, so by finding the maximum
+## set size required per ID up front, we save a lot of work later...
+warn "Parsing pass 1/2\n";
 
-## This is needed for efficieny below... Although, after debugging, it
-## may not be needed! Certainly if we keep it, the code below can be
-## cleaned up.
 my %length;
 
 warn "Parsing the range file pass 1/2\n";
 
 while(<$RANGE>){
     chomp;
-    my ($id, $st, $en) = split "\t";
-    if($en > ($length{$id} || 0)){
-        $length{$id} = $en;
+    my ($id1, $st1, $en1, 
+        $id2, $st2, $en2) = split "\t";
+    
+    my ($id, $st, $en) = ($id1, $st1, $en1);
+    
+    if ($side eq 'target'){
+        if (defined $id2){
+            ($id, $st, $en) = ($id2, $st2, $en2);
+        }
     }
+    
+    $length{$id} = $en
+        if $en > ($length{$id} || 0)
 }
 ## Rewind
 seek $RANGE, 0, 0;
@@ -127,7 +137,16 @@ my $range_space = 0;
 
 while(<$RANGE>){
     chomp;
-    my ($id, $st, $en) = split "\t";
+    my ($id1, $st1, $en1, 
+        $id2, $st2, $en2) = split "\t";
+    
+    my ($id, $st, $en) = ($id1, $st1, $en1);
+    
+    if ($side eq 'target'){
+        if (defined $id2){
+            ($id, $st, $en) = ($id2, $st2, $en2);
+        }
+    }
     
     $ranges++;
     
@@ -212,7 +231,7 @@ while(<$ATAC>){
 }
 warn "loaded $atacs atacs on ", scalar keys %atac_sets, " seq-regions\n";
 
-my $atac_space_no_overlap;
+my $atac_space_no_overlap = 0;
 $atac_space_no_overlap += $_->Norm
     for values %atac_sets;
 
@@ -222,7 +241,7 @@ warn "atac space is $atac_space total ($atac_space_no_overlap no-overlap) bp\n";
 
 
 
-## What is the range coverage?
+## What is the range-range coverage?
 
 my $coverage_sr = 0;
 my $coverage_bp = 0;
@@ -231,12 +250,6 @@ for my $id (keys %range_sets){
     next unless exists $atac_sets{$id};
     
     $coverage_sr++;
-    
-    # my ($smallest, $biggest) = sort {$a<=>$b}
-    # ($range_sets{$id}->Max, $atac_sets{$id}->Max);
-    
-    # $range_sets{$id}->Resize(1, $biggest);
-    # $atac_sets{$id}->Resize(1, $biggest);
     
     my $intersection = Set::IntRange->new(1, $length{$id});
     
@@ -247,7 +260,9 @@ for my $id (keys %range_sets){
 
 warn "coverage of xxxxx atacs on $coverage_sr seq-regions\n";
 warn "coverage (non-overlapping overlap) is ", $coverage_bp, " bp\n";
-warn $coverage_bp / $range_space_no_overlap * 100, " of non-overlapping range space\n";
+
+warn $coverage_bp / $range_space_no_overlap * 100,
+    " of non-overlapping range space\n";
 
 
 # print
