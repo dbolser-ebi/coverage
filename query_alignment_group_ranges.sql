@@ -1,6 +1,8 @@
 
 -- Query to select all alignments between pairs of sequences in a
--- given WGA (using our 'MLSS_ID' to identify the WGA).
+-- given WGA (using our 'MLSS_ID' to identify the WGA). In fact it's
+-- safer to use two genome_db_ids, as this sets order of the results
+-- (query vs. target)
 
 -- For details of the schema, see:
 -- http://www.ensembl.org/info/docs/api/compara/compara_schema.html
@@ -17,7 +19,6 @@ OPTIMIZE TABLE genomic_align_block;
 
 
 
-#EXPLAIN -- Useful for debugging
 SELECT
   xx.name, MIN(x.dnafrag_start), MAX(x.dnafrag_end),
   yy.name, MIN(y.dnafrag_start), MAX(y.dnafrag_end)
@@ -50,13 +51,25 @@ WHERE
   -- Limit to a specific WGA (pick one!)
   --
   -- Wheat inter-component alignments using LASTZ (EG24 and below)
-  b.method_link_species_set_id = 9286
+  #b.method_link_species_set_id = 9286
   --
   -- Wheat inter-component alignments using LASTZ (EG25 and above)
   #b.method_link_species_set_id = 9358
   --
   -- Wheat inter-component alignments using ATAC (EG26 and above)
   #b.method_link_species_set_id = 9413
+  --
+  -- Arabidopsis thaliana vs Arabidopsis lyrata BlastZ Results
+  #b.method_link_species_set_id = 8654
+  --
+  -- OR
+  -- Limit to a specific pair of genome_db_ids
+  xx.genome_db_id = 1505 # Arabidopsis thaliana
+  #xx.genome_db_id = 1580 # Solanum lycopersicum
+AND
+  #yy.genome_db_id = 1554 # Arabidopsis lyrata
+  #yy.genome_db_id = 1601 # Solanum tuberosum
+  yy.genome_db_id = 1835 # Brassica rapa
 AND
   x.genomic_align_id !=
   y.genomic_align_id
