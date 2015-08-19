@@ -146,3 +146,21 @@ warn $coverage_bp / $range_space{$rf1} * 100,
     " of non-overlapping range space\n";
 warn $coverage_bp / $range_space{$rf2} * 100,
     " of non-overlapping range space\n";
+
+print
+    join("\t",
+         (scalar keys %{$range_sets{$rf1}}),
+         $range_space{$rf1},
+         
+         (scalar keys %{$range_sets{$rf2}}),
+         $range_space{$rf2},
+
+         $coverage_sr,
+         $coverage_bp,
+         
+         $coverage_bp / $range_space{$rf1} * 100,
+         $coverage_bp / $range_space{$rf2} * 100,
+         
+         $rf1,
+         $rf2,
+    ), "\n";
