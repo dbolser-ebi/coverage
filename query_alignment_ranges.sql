@@ -15,9 +15,18 @@ OPTIMIZE TABLE dnafrag;
 OPTIMIZE TABLE genomic_align;
 OPTIMIZE TABLE genomic_align_block;
 
+-- Order (and spelling!) is important!
+SET @species1 = 'solanum_lycopersicum';
+SET @species2 = 'solanum_tuberosum';
+
+-- Use these explicitly in the query below (sorry)
+SELECT @genome_db_id1 := genome_db_id FROM genome_db WHERE name = @species1;
+SELECT @genome_db_id2 := genome_db_id FROM genome_db WHERE name = @species2;
+
 */
 
-
+-- TODO: Why bother dumping the actuall sequence name? The id is just
+-- as unique and consistent. This would save two extra joins.
 
 SELECT
   xx.name, x.dnafrag_start, x.dnafrag_end,
@@ -59,14 +68,18 @@ WHERE
   -- Wheat inter-component alignments using ATAC (EG26 and above)
   #b.method_link_species_set_id = 9413
   --
-  -- Arabidopsis thaliana vs Arabidopsis lyrata BlastZ Results
+  -- Arabidopsis thaliana vs. Arabidopsis lyrata BlastZ Results
   #b.method_link_species_set_id = 8654
   --
   -- OR
   -- Limit to a specific pair of genome_db_ids
-  xx.genome_db_id = 1505 # Arabidopsis thaliana
-AND
-  yy.genome_db_id = 1554 # Arabidopsis lyrata
+  --
+  -- Arabidopsis thaliana vs. Arabidopsis lyrata 
+  #xx.genome_db_id = 1505 AND yy.genome_db_id = 1554
+  --
+  -- Solanum lycopersicum vs. Solanum tuberosum
+  xx.genome_db_id = 2069 AND yy.genome_db_id = 1601 AND
+  b.method_link_species_set_id = 9420
   --
 AND
   x.genomic_align_id !=
