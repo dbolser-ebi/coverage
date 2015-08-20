@@ -6,20 +6,19 @@
 -- We do it in a couple of steps for efficiency (3 then 2 joins
 -- instead of 6 joins in one (included for reference below)).
 
-/*
-
 -- Creates spurious output that needs to be removed from the result
 OPTIMIZE TABLE homology;
 OPTIMIZE TABLE homology_member;
 OPTIMIZE TABLE gene_member;
 OPTIMIZE TABLE dnafrag;
 
-*/
-
 -- Since we have to trim cruft from the result of this query anyway,
 -- lets be frivolous and use SQL variables...
-SET @homology_description = 'homoeolog_one2one';
+#SET @homology_description = 'homoeolog_one2one';
+
 SET @homology_description =  'ortholog_one2one';
+#SET @homology_description =  'ortholog_one2many';
+#SET @homology_description =  'ortholog_many2many';
 
 -- Order (and spelling!) is important!
 SET @species1 = 'solanum_lycopersicum';
@@ -28,8 +27,8 @@ SET @species2 = 'solanum_tuberosum';
 #SET @species1 = 'arabidopsis_thaliana';
 #SET @species2 = 'arabidopsis_lyrata';
 
-SET @species1 = 'arabidopsis_thaliana';
-SET @species2 = 'brassica_rapa';
+#SET @species1 = 'arabidopsis_thaliana';
+#SET @species2 = 'brassica_rapa';
 
 
 
@@ -70,6 +69,9 @@ HAVING
 
 -- This query can be slow! (The homology and homology member tables
 -- are enormous.)
+
+-- TODO: Why bother dumping the actuall sequence name? The id is just
+-- as unique and consistent. This would save two extra joins.
 
 DROP             TABLE IF EXISTS temp_x1;
 CREATE TEMPORARY TABLE           temp_x1 (
@@ -137,6 +139,10 @@ WHERE
   a.genome_db_id = @genome_db_id1
 AND
   b.genome_db_id = @genome_db_id2
+--
+-- Debugging
+#LIMIT
+#  03
 ;
 
 
