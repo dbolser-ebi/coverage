@@ -5,26 +5,6 @@ use warnings;
 ## Easy manipulation of sets of integers (arbitrary intervals)
 use Set::IntRange;
 
-## Command line...
-use Getopt::Long;
-
-## We have the 'query/target' concept here
-my $side = 'query';
-
-## Get commad line options
-GetOptions( 
-    ## Either query or target
-    'side=s'            => \$side,
-)
-    or die "failure to communicate\n";
-
-die "side must be either query or target\n"
-    unless
-        $side eq 'query'  ||
-        $side eq 'target';
-
-warn "using $side\n";
-
 die "pass two range-files\n"
     unless @ARGV == 2;
 
@@ -48,16 +28,7 @@ for my $range ($rf1, $rf2){
     while(<$RANGE>){
         chomp;
         
-        my ($id1, $st1, $en1, 
-            $id2, $st2, $en2) = split "\t";
-        
-        my ($id, $st, $en) = ($id1, $st1, $en1);
-        
-        if ($side eq 'target'){
-            if (defined $id2){
-                ($id, $st, $en) = ($id2, $st2, $en2);
-            }
-        }
+        my ($id, $st, $en) = split "\t";
         
         $length{$id} = $en
             if $en > ($length{$id} || 0)
@@ -85,16 +56,7 @@ for my $range ($rf1, $rf2){
     while(<$RANGE>){
         chomp;
         
-        my ($id1, $st1, $en1, 
-            $id2, $st2, $en2) = split "\t";
-        
-        my ($id, $st, $en) = ($id1, $st1, $en1);
-        
-        if ($side eq 'target'){
-            if (defined $id2){
-                ($id, $st, $en) = ($id2, $st2, $en2);
-            }
-        }
+        my ($id, $st, $en) = split "\t";
         
         $ranges++;
         $range_space += $en-$st+1;
