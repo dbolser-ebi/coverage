@@ -1,6 +1,5 @@
 #!/bin/env perl
-
-use strict;
+use 5.14.0;
 use warnings;
 
 ## Easy manipulation of sets of integers (arbitrary intervals)
