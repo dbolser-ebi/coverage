@@ -9,7 +9,7 @@ use warnings;
 # approach would be to project x1 onto x2 using y1 -> y2, and looking
 # to see if x1` overlaps x2. A projection isn't possible here because
 # we only have block level alignment details, we need base level
-# alignments to project accurately.
+# alignments to project accurately!
 
 die "pass two, two part (query and target) range-files\n"
     unless @ARGV == 2;
@@ -126,4 +126,3 @@ warn $support, "\n";
 warn
     sprintf("%6.2f%% range pairs in file one ".
             "'supported' by those in file two", $support/$one*100), "\n";
-
