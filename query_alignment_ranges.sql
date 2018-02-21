@@ -25,9 +25,6 @@ SELECT @genome_db_id2 := genome_db_id FROM genome_db WHERE name = @species2;
 
 */
 
--- TODO: Why bother dumping the actuall sequence name? The id is just
--- as unique and consistent. This would save two extra joins.
-
 SELECT
   xx.name, x.dnafrag_start, x.dnafrag_end,
   yy.name, y.dnafrag_start, y.dnafrag_end
@@ -57,29 +54,17 @@ ON
   yy.dnafrag_id
 --
 WHERE
-  -- Limit to a specific WGA (pick one!)
   --
-  -- Wheat inter-component alignments using LASTZ (EG24 and below)
-  #b.method_link_species_set_id = 9286
+  -- Limit to a specific WGA
   --
-  -- Wheat inter-component alignments using LASTZ (EG25 and above)
-  #b.method_link_species_set_id = 9358
-  --
-  -- Wheat inter-component alignments using ATAC (EG26 and above)
-  #b.method_link_species_set_id = 9413
-  --
-  -- Arabidopsis thaliana vs. Arabidopsis lyrata BlastZ Results
-  #b.method_link_species_set_id = 8654
+  b.method_link_species_set_id = 9469
   --
   -- OR
+  --
   -- Limit to a specific pair of genome_db_ids
   --
-  -- Arabidopsis thaliana vs. Arabidopsis lyrata 
-  #xx.genome_db_id = 1505 AND yy.genome_db_id = 1554
-  --
-  -- Solanum lycopersicum vs. Solanum tuberosum
-  xx.genome_db_id = 2069 AND yy.genome_db_id = 1601 AND
-  b.method_link_species_set_id = 9420
+  #xx.genome_db_id = @genome_db_id1 AND
+  #yy.genome_db_id = @genome_db_id2
   --
 AND
   x.genomic_align_id !=
