@@ -3,14 +3,22 @@
 use strict;
 use warnings;
 
+
+
 ## Easy manipulation of sets of integers (arbitrary intervals)
 use Set::IntRange;
+
+
 
 ## Command line...
 use Getopt::Long;
 
+
+
 ## We have the 'query/target' concept here
 my $side = 'query';
+
+
 
 ## Get commad line options
 GetOptions( 
@@ -26,11 +34,16 @@ die "side must be either query or target\n"
 
 warn "using $side\n";
 
+
+
 die "pass two range-files\n"
     unless @ARGV == 2;
 
 my $rf1 = $ARGV[0];
 my $rf2 = $ARGV[1];
+
+
+
 
 
 ## This 'first pass' is needed for efficieny below. Basically the 'set
@@ -66,6 +79,8 @@ for my $range ($rf1, $rf2){
     
     warn scalar keys %length, "\n";
 }
+
+
 
 
 
@@ -115,8 +130,9 @@ for my $range ($rf1, $rf2){
     warn "range space is $range_space total ".
         "($range_space_no_overlap no-overlap) bp\n";
     
-    ## Hide this value away...
-    $range_space{$range} = $range_space_no_overlap;
+    ## Hide these values away...
+    $range_space{'total'}{$range} = $range_space;
+    $range_space{'no-overlap'}{$range} = $range_space_no_overlap;
 }
 
 
@@ -137,29 +153,33 @@ for my $id (keys %{$range_sets{$rf1}}){
                                 $range_sets{$rf2}{$id});
     
     $coverage_bp += $intersection->Norm;
+
+    # TODO: Optionally dump the union here
 }
 
 warn "coverage of xxxxx ranges on $coverage_sr seq-regions\n";
 warn "coverage (non-overlapping overlap) is ", $coverage_bp, " bp\n";
 
-warn $coverage_bp / $range_space{$rf1} * 100,
+warn $coverage_bp / $range_space{'no-overlap'}{$rf1} * 100,
     " of non-overlapping range space\n";
-warn $coverage_bp / $range_space{$rf2} * 100,
+warn $coverage_bp / $range_space{'no-overlap'}{$rf2} * 100,
     " of non-overlapping range space\n";
 
 print
     join("\t",
          (scalar keys %{$range_sets{$rf1}}),
-         $range_space{$rf1},
+         $range_space{'total'}{$rf1},
+         $range_space{'no-overlap'}{$rf1},
          
          (scalar keys %{$range_sets{$rf2}}),
-         $range_space{$rf2},
+         $range_space{'total'}{$rf2},
+         $range_space{'no-overlap'}{$rf2},
 
          $coverage_sr,
          $coverage_bp,
          
-         $coverage_bp / $range_space{$rf1} * 100,
-         $coverage_bp / $range_space{$rf2} * 100,
+         $coverage_bp / $range_space{'no-overlap'}{$rf1} * 100,
+         $coverage_bp / $range_space{'no-overlap'}{$rf2} * 100,
          
          $rf1,
          $rf2,
